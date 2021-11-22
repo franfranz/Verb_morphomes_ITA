@@ -1,23 +1,22 @@
-###
+###  
+#   verb_morphomes_ITA_typefreq.R
 #
-#     M O R P H O M E    P A T T E R N S 
+#     M O R P H O M E    P A T T E R N S  (TYPES)
 #
 #             +++ italian verbal morphology +++   
 #
-#      v.4.0.0 tokenfreq
+#      v.4.1.0  - - T Y P E  F R E Q U E N C Y - -
 #
 #     https://github.com/franfranz/Verb_morphomes_ITA
 #
 ### 
 
 
-#   Description
-#   
-#
-#
-#  Description
-#  Description
-#  The verb_lemma list of word frequencies is available here 
+#   This script counts the verbs with a L-morphomic pattern in Italian
+#   Verb types are collected from morph-it! (Zanchetta & Baroni, 2005)
+
+#   careful: this script is for counting types only. 
+#   For token frequency, refer to "verb_morphomes_ITA_tokenfreq.R"
 
 
 # REFERENCE LEGEND - regular latin graphemes ere used instead of IPA to ensure compatibility
@@ -32,10 +31,7 @@
 # clear ws
 rm(list=ls())
 
-# filename of the itwac list currently in use
-thefilename_itwac="itwac_verbs_lemmas_notail_2_1_0.csv"
-
-# required packages: stringr, pryr, xtable, viridis 
+# required packages: stringr, xtable, 
 
 
 ###
@@ -53,44 +49,7 @@ thefilename_itwac="itwac_verbs_lemmas_notail_2_1_0.csv"
 library(pryr)
 library(stringr)
 
-## input required: graphical parameters 
 
-# palette in colors - viridis 
-# resists grayscale transformation and is good for printing but lighter colors ere not that visible in presentations
-col_a1 = viridisLite::viridis(8)[1]
-col_a2 = viridisLite::viridis(8)[2]
-
-col_b1 = viridisLite::viridis(8)[6]
-col_b2 = viridisLite::viridis(8)[7]
-
-col_c1 = viridisLite::viridis(8)[11]
-col_c2 = viridisLite::viridis(8)[12]
-
-col_d1 = viridisLite::viridis(8)[16]
-col_d2 = viridisLite::viridis(8)[17]
-
-
-# palette in greyscale 
-# col_a = "#171717" #grey10
-# col_b = "#303030" #grey20
-# col_c = "#7D7D7D"  #grey50
-# col_d = "#B3B3B3" #grey70
-
-pal_01=c(col_a1, col_b1, col_c1, col_d1)
-pal_02=c(col_a1, col_a2, col_b1, col_b2, col_c1, col_c2, col_d1, col_d2)
-
-
-# bar borders 
-bar_bor1="#FFFFFF" #white
-bar_bor2= "#4D4D4D" #grey30 
-
-# legend settings
-#legendcontent=
-#colcontent= 
-myfavbty= "n"
-
-# other constants
-roundnum = 4
 
 
 # ### #
@@ -127,20 +86,6 @@ codewd=inwd
 setwd(inwd)
 
 
-itwac_all = read.csv(thefilename_itwac, 
-                     header = T,
-                     sep=",",
-                     enc="utf-8")
-
-summary(itwac_all)
-head(itwac_all, 20)
-
-itwac_all$Freq <- as.integer(itwac_all$Freq)
-#unique(itwac_all$POS)=="NOUN"
-
-# drop itwac POS column
-itwac_all$POS=NULL
-
 # import morphit#
 morphit <- read.delim('morph-it_048.txt', 
                       header = F, 
@@ -161,17 +106,18 @@ unique(morphit$POS)
 # extract forms
 #
 
-# present subjunctive 1- 2- 3 ps
-# present indicative 1 -2 ps
-# present infinite 
+# present indicative 1 - 3 ps, 1 pp
+# present subjunctive 1 ps
+# present infinitive 
 
-verbs0=  morphit[morphit$POS=="VER:sub+pres+1+s"|
-                   morphit$POS=="VER:ind+pres+1+p"|
-                   #         morphit$POS=="VER:sub+pres+3+s"|
-                   morphit$POS=="VER:ind+pres+1+s"|
+
+verbs0=  morphit[morphit$POS=="VER:ind+pres+1+s"|
                    morphit$POS=="VER:ind+pres+3+s"|
+                   morphit$POS=="VER:ind+pres+1+p"|
+                   morphit$POS=="VER:sub+pres+1+s"|
                    morphit$POS=="VER:inf+pres", 
 ]
+
 
 head(verbs0)
 
@@ -198,12 +144,8 @@ unique(verbs1$conj)
 verbs1=verbs1[verbs1$conj!="rsi", ]
 
 
-# merge token frequency
-
-verbsfreqs= merge(verbs1, itwac_all[, c("Form", "Freq")], by.x = "form", by.y = "Form")
-
 # 
-verbs2=verbsfreqs
+verbs2=verbs1
 #
 #
 # increase phonetic transperency
@@ -464,7 +406,7 @@ ARE_indpres_1s$fonform_1ps_ind=ARE_indpres_1s$fonform
 ARE_indpres_1s$fonroot_1ps_ind=ARE_indpres_1s$fonroot
 ARE_indpres_1s$fonsuff_1ps_ind=ARE_indpres_1s$fonsuff
 ARE_indpres_1s$pal_end_1ps_ind=ARE_indpres_1s$pal_end
-ARE_indpres_1s$formfreq_1ps_ind=ARE_indpres_1s$Freq
+#ARE_indpres_1s$formfreq_1ps_ind=ARE_indpres_1s$Freq
 
 
 #
@@ -507,7 +449,7 @@ ARE_indpres_3s$form_3ps_ind=ARE_indpres_3s$form
 ARE_indpres_3s$fonform_3ps_ind=ARE_indpres_3s$fonform
 ARE_indpres_3s$fonroot_3ps_ind=ARE_indpres_3s$fonroot
 ARE_indpres_3s$pal_end_3ps_ind=ARE_indpres_3s$pal_end
-ARE_indpres_3s$formfreq_3ps_ind=ARE_indpres_3s$Freq
+#ARE_indpres_3s$formfreq_3ps_ind=ARE_indpres_3s$Freq
 
 
 #
@@ -550,7 +492,7 @@ ARE_indpres_1p$form_1pp_ind=ARE_indpres_1p$form
 ARE_indpres_1p$fonform_1pp_ind=ARE_indpres_1p$fonform
 ARE_indpres_1p$fonroot_1pp_ind=ARE_indpres_1p$fonroot
 ARE_indpres_1p$pal_end_1pp_ind=ARE_indpres_1p$pal_end
-ARE_indpres_1p$formfreq_1pp_ind=ARE_indpres_1p$Freq
+#ARE_indpres_1p$formfreq_1pp_ind=ARE_indpres_1p$Freq
 
 
 #
@@ -561,19 +503,6 @@ ARE_indpres_1p$formfreq_1pp_ind=ARE_indpres_1p$Freq
 ARE_subjpres_1s=are_verbs[are_verbs$POS=="VER:sub+pres+1+s", ]
 unique(ARE_subjpres_1s$fonsuff)
 
-# forms in [-io] 
-# #ARE_subjpres_1s_i=ARE_subjpres_1s[grep("i$", ARE_subjpres_1s$fonroot), ]
-# ARE_subjpres_1s_i=ARE_subjpres_1s[ARE_subjpres_1s$lemma_morphit %in% ARE_indpres_1s$pal_end_1ps_ind=ARE_indpres_1s$pal_end_jo$lemma_morphit==T, ]
-# ARE_subjpres_1s_i$fonroot=ARE_subjpres_1s_i$fonform
-# 
-# # subtract
-# ARE_subjpres_1s=ARE_subjpres_1s[ARE_subjpres_1s$lemma_morphit %in%ARE_subjpres_1s_i==F, ]
-# 
-# #remerge
-# ARE_subjpres_1s=rbind(ARE_subjpres_1s, ARE_subjpres_1s_i)
-# 
-# ARE_subjpres_1s_ii=ARE_subjpres_1s[grep("ii$", ARE_subjpres_1s$fonform), ]
-# unique(ARE_subjpres_1s_ii$fonsuff)
 
 ARE_subjpres_1s$fonroot=str_sub(ARE_subjpres_1s$fonform, 1, -2)
 ARE_subjpres_1s$fonsuff=str_sub(ARE_subjpres_1s$fonform, -1, -1)
@@ -608,13 +537,13 @@ ARE_subjpres_1s$form_1ps_sub=ARE_subjpres_1s$form
 ARE_subjpres_1s$fonform_1ps_sub=ARE_subjpres_1s$fonform
 ARE_subjpres_1s$fonroot_1ps_sub=ARE_subjpres_1s$fonroot
 ARE_subjpres_1s$pal_end_1ps_sub=ARE_subjpres_1s$pal_end
-ARE_subjpres_1s$formfreq_1ps_sub=ARE_subjpres_1s$Freq
+#ARE_subjpres_1s$formfreq_1ps_sub=ARE_subjpres_1s$Freq
 
 
 # merge indicative singular forms
-ARE_verbs_morph0=merge(ARE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind", 
+ARE_verbs_morph0=merge(ARE_indpres_1s[, c("form_1ps_ind", #"formfreq_1ps_ind", 
                                           "fonform_1ps_ind", "fonroot_1ps_ind", "pal_end_1ps_ind", "lemma_morphit", "conj", "inf_root", "pal_end_inf")], 
-                       ARE_indpres_3s[ , c("form_3ps_ind", "formfreq_3ps_ind", 
+                       ARE_indpres_3s[ , c("form_3ps_ind", #"formfreq_3ps_ind", 
                                            "fonform_3ps_ind", "fonroot_3ps_ind", "pal_end_3ps_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -622,7 +551,7 @@ ARE_verbs_morph0=merge(ARE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind",
                        all.x = F)
 
 ARE_verbs_morph1=merge(ARE_verbs_morph0, 
-                       ARE_indpres_1p[ , c("form_1pp_ind", "formfreq_1pp_ind", 
+                       ARE_indpres_1p[ , c("form_1pp_ind",# "formfreq_1pp_ind", 
                                            "fonform_1pp_ind", "fonroot_1pp_ind", "pal_end_1pp_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -631,7 +560,7 @@ ARE_verbs_morph1=merge(ARE_verbs_morph0,
 
 # merge subjunctive forms
 ARE_verbs_morph=merge(ARE_verbs_morph1, 
-                      ARE_subjpres_1s[ , c("form_1ps_sub", "formfreq_1ps_sub", 
+                      ARE_subjpres_1s[ , c("form_1ps_sub", #"formfreq_1ps_sub", 
                                            "fonform_1ps_sub", "fonroot_1ps_sub", "pal_end_1ps_sub", 
                                            "lemma_morphit")], 
                       by.x="lemma_morphit", 
@@ -645,7 +574,7 @@ ARE_verbs_morph$L_morph=ifelse(ARE_verbs_morph$fonroot_1ps_ind==ARE_verbs_morph$
                                1, 0)
 
 
-# is root of indicative 1 pers singular == the root of infinite 
+# is root of indicative 1 pers singular == the root of infinitive 
 ARE_verbs_morph$indpres_1s_eq_inf= ifelse(ARE_verbs_morph$fonroot_1ps_ind==ARE_verbs_morph$inf_root, 1, 0)
 
 summary(ARE_verbs_morph$indpres_1s_eq_inf)
@@ -715,7 +644,7 @@ ERE_indpres_1s$fonform_1ps_ind=ERE_indpres_1s$fonform
 ERE_indpres_1s$fonroot_1ps_ind=ERE_indpres_1s$fonroot
 ERE_indpres_1s$fonsuff_1ps_ind=ERE_indpres_1s$fonsuff
 ERE_indpres_1s$pal_end_1ps_ind=ERE_indpres_1s$pal_end
-ERE_indpres_1s$formfreq_1ps_ind=ERE_indpres_1s$Freq
+#ERE_indpres_1s$formfreq_1ps_ind=ERE_indpres_1s$Freq
 
 
 #
@@ -758,7 +687,7 @@ ERE_indpres_3s$form_3ps_ind=ERE_indpres_3s$form
 ERE_indpres_3s$fonform_3ps_ind=ERE_indpres_3s$fonform
 ERE_indpres_3s$fonroot_3ps_ind=ERE_indpres_3s$fonroot
 ERE_indpres_3s$pal_end_3ps_ind=ERE_indpres_3s$pal_end
-ERE_indpres_3s$formfreq_3ps_ind=ERE_indpres_3s$Freq
+#ERE_indpres_3s$formfreq_3ps_ind=ERE_indpres_3s$Freq
 
 
 #
@@ -801,7 +730,7 @@ ERE_indpres_1p$form_1pp_ind=ERE_indpres_1p$form
 ERE_indpres_1p$fonform_1pp_ind=ERE_indpres_1p$fonform
 ERE_indpres_1p$fonroot_1pp_ind=ERE_indpres_1p$fonroot
 ERE_indpres_1p$pal_end_1pp_ind=ERE_indpres_1p$pal_end
-ERE_indpres_1p$formfreq_1pp_ind=ERE_indpres_1p$Freq
+#ERE_indpres_1p$formfreq_1pp_ind=ERE_indpres_1p$Freq
 
 
 #
@@ -846,13 +775,13 @@ ERE_subjpres_1s$form_1ps_sub=ERE_subjpres_1s$form
 ERE_subjpres_1s$fonform_1ps_sub=ERE_subjpres_1s$fonform
 ERE_subjpres_1s$fonroot_1ps_sub=ERE_subjpres_1s$fonroot
 ERE_subjpres_1s$pal_end_1ps_sub=ERE_subjpres_1s$pal_end
-ERE_subjpres_1s$formfreq_1ps_sub=ERE_subjpres_1s$Freq
+#ERE_subjpres_1s$formfreq_1ps_sub=ERE_subjpres_1s$Freq
 
 
 # merge indicative singular forms
-ERE_verbs_morph0=merge(ERE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind", 
+ERE_verbs_morph0=merge(ERE_indpres_1s[, c("form_1ps_ind",# "formfreq_1ps_ind", 
                                           "fonform_1ps_ind", "fonroot_1ps_ind", "pal_end_1ps_ind", "lemma_morphit", "conj", "inf_root", "pal_end_inf")], 
-                       ERE_indpres_3s[ , c("form_3ps_ind", "formfreq_3ps_ind", 
+                       ERE_indpres_3s[ , c("form_3ps_ind",# "formfreq_3ps_ind", 
                                            "fonform_3ps_ind", "fonroot_3ps_ind", "pal_end_3ps_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -860,7 +789,7 @@ ERE_verbs_morph0=merge(ERE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind",
                        all.x = F)
 
 ERE_verbs_morph1=merge(ERE_verbs_morph0, 
-                       ERE_indpres_1p[ , c("form_1pp_ind", "formfreq_1pp_ind", 
+                       ERE_indpres_1p[ , c("form_1pp_ind",# "formfreq_1pp_ind", 
                                            "fonform_1pp_ind", "fonroot_1pp_ind", "pal_end_1pp_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -869,7 +798,7 @@ ERE_verbs_morph1=merge(ERE_verbs_morph0,
 
 # merge subjunctive forms
 ERE_verbs_morph=merge(ERE_verbs_morph1, 
-                      ERE_subjpres_1s[ , c("form_1ps_sub", "formfreq_1ps_sub", 
+                      ERE_subjpres_1s[ , c("form_1ps_sub", #"formfreq_1ps_sub", 
                                            "fonform_1ps_sub", "fonroot_1ps_sub", "pal_end_1ps_sub", 
                                            "lemma_morphit")], 
                       by.x="lemma_morphit", 
@@ -958,7 +887,7 @@ IRE_indpres_1s$fonform_1ps_ind=IRE_indpres_1s$fonform
 IRE_indpres_1s$fonroot_1ps_ind=IRE_indpres_1s$fonroot
 IRE_indpres_1s$fonsuff_1ps_ind=IRE_indpres_1s$fonsuff
 IRE_indpres_1s$pal_end_1ps_ind=IRE_indpres_1s$pal_end
-IRE_indpres_1s$formfreq_1ps_ind=IRE_indpres_1s$Freq
+#IRE_indpres_1s$formfreq_1ps_ind=IRE_indpres_1s$Freq
 
 
 #
@@ -1001,7 +930,7 @@ IRE_indpres_3s$form_3ps_ind=IRE_indpres_3s$form
 IRE_indpres_3s$fonform_3ps_ind=IRE_indpres_3s$fonform
 IRE_indpres_3s$fonroot_3ps_ind=IRE_indpres_3s$fonroot
 IRE_indpres_3s$pal_end_3ps_ind=IRE_indpres_3s$pal_end
-IRE_indpres_3s$formfreq_3ps_ind=IRE_indpres_3s$Freq
+#IRE_indpres_3s$formfreq_3ps_ind=IRE_indpres_3s$Freq
 
 
 #
@@ -1044,7 +973,7 @@ IRE_indpres_1p$form_1pp_ind=IRE_indpres_1p$form
 IRE_indpres_1p$fonform_1pp_ind=IRE_indpres_1p$fonform
 IRE_indpres_1p$fonroot_1pp_ind=IRE_indpres_1p$fonroot
 IRE_indpres_1p$pal_end_1pp_ind=IRE_indpres_1p$pal_end
-IRE_indpres_1p$formfreq_1pp_ind=IRE_indpres_1p$Freq
+#IRE_indpres_1p$formfreq_1pp_ind=IRE_indpres_1p$Freq
 
 
 #
@@ -1089,13 +1018,13 @@ IRE_subjpres_1s$form_1ps_sub=IRE_subjpres_1s$form
 IRE_subjpres_1s$fonform_1ps_sub=IRE_subjpres_1s$fonform
 IRE_subjpres_1s$fonroot_1ps_sub=IRE_subjpres_1s$fonroot
 IRE_subjpres_1s$pal_end_1ps_sub=IRE_subjpres_1s$pal_end
-IRE_subjpres_1s$formfreq_1ps_sub=IRE_subjpres_1s$Freq
+#IRE_subjpres_1s$formfreq_1ps_sub=IRE_subjpres_1s$Freq
 
 
 # merge indicative singular forms
-IRE_verbs_morph0=merge(IRE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind", 
+IRE_verbs_morph0=merge(IRE_indpres_1s[, c("form_1ps_ind", #"formfreq_1ps_ind", 
                                           "fonform_1ps_ind", "fonroot_1ps_ind", "fonroot_noinc_1ps_ind", "pal_end_1ps_ind", "lemma_morphit", "conj", "inf_root", "pal_end_inf")], 
-                       IRE_indpres_3s[ , c("form_3ps_ind", "formfreq_3ps_ind", 
+                       IRE_indpres_3s[ , c("form_3ps_ind", #"formfreq_3ps_ind", 
                                            "fonform_3ps_ind", "fonroot_3ps_ind", "pal_end_3ps_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -1103,7 +1032,7 @@ IRE_verbs_morph0=merge(IRE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind",
                        all.x = F)
 
 IRE_verbs_morph1=merge(IRE_verbs_morph0, 
-                       IRE_indpres_1p[ , c("form_1pp_ind", "formfreq_1pp_ind", 
+                       IRE_indpres_1p[ , c("form_1pp_ind", #"formfreq_1pp_ind", 
                                            "fonform_1pp_ind", "fonroot_1pp_ind", "pal_end_1pp_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -1112,7 +1041,7 @@ IRE_verbs_morph1=merge(IRE_verbs_morph0,
 
 # merge subjunctive forms
 IRE_verbs_morph=merge(IRE_verbs_morph1, 
-                      IRE_subjpres_1s[ , c("form_1ps_sub", "formfreq_1ps_sub", 
+                      IRE_subjpres_1s[ , c("form_1ps_sub", #"formfreq_1ps_sub", 
                                            "fonform_1ps_sub", "fonroot_1ps_sub", "pal_end_1ps_sub", 
                                            "lemma_morphit")], 
                       by.x="lemma_morphit", 
@@ -1195,7 +1124,7 @@ RRE_indpres_1s$fonform_1ps_ind=RRE_indpres_1s$fonform
 RRE_indpres_1s$fonroot_1ps_ind=RRE_indpres_1s$fonroot
 RRE_indpres_1s$fonsuff_1ps_ind=RRE_indpres_1s$fonsuff
 RRE_indpres_1s$pal_end_1ps_ind=RRE_indpres_1s$pal_end
-RRE_indpres_1s$formfreq_1ps_ind=RRE_indpres_1s$Freq
+#RRE_indpres_1s$formfreq_1ps_ind=RRE_indpres_1s$Freq
 
 
 #
@@ -1238,7 +1167,7 @@ RRE_indpres_3s$form_3ps_ind=RRE_indpres_3s$form
 RRE_indpres_3s$fonform_3ps_ind=RRE_indpres_3s$fonform
 RRE_indpres_3s$fonroot_3ps_ind=RRE_indpres_3s$fonroot
 RRE_indpres_3s$pal_end_3ps_ind=RRE_indpres_3s$pal_end
-RRE_indpres_3s$formfreq_3ps_ind=RRE_indpres_3s$Freq
+#RRE_indpres_3s$formfreq_3ps_ind=RRE_indpres_3s$Freq
 
 
 #
@@ -1281,7 +1210,7 @@ RRE_indpres_1p$form_1pp_ind=RRE_indpres_1p$form
 RRE_indpres_1p$fonform_1pp_ind=RRE_indpres_1p$fonform
 RRE_indpres_1p$fonroot_1pp_ind=RRE_indpres_1p$fonroot
 RRE_indpres_1p$pal_end_1pp_ind=RRE_indpres_1p$pal_end
-RRE_indpres_1p$formfreq_1pp_ind=RRE_indpres_1p$Freq
+#RRE_indpres_1p$formfreq_1pp_ind=RRE_indpres_1p$Freq
 
 
 #
@@ -1326,13 +1255,13 @@ RRE_subjpres_1s$form_1ps_sub=RRE_subjpres_1s$form
 RRE_subjpres_1s$fonform_1ps_sub=RRE_subjpres_1s$fonform
 RRE_subjpres_1s$fonroot_1ps_sub=RRE_subjpres_1s$fonroot
 RRE_subjpres_1s$pal_end_1ps_sub=RRE_subjpres_1s$pal_end
-RRE_subjpres_1s$formfreq_1ps_sub=RRE_subjpres_1s$Freq
+#RRE_subjpres_1s$formfreq_1ps_sub=RRE_subjpres_1s$Freq
 
 
 # merge indicative singular forms
-RRE_verbs_morph0=merge(RRE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind", 
+RRE_verbs_morph0=merge(RRE_indpres_1s[, c("form_1ps_ind",# "formfreq_1ps_ind", 
                                           "fonform_1ps_ind", "fonroot_1ps_ind", "pal_end_1ps_ind", "lemma_morphit", "conj", "inf_root", "pal_end_inf")], 
-                       RRE_indpres_3s[ , c("form_3ps_ind", "formfreq_3ps_ind", 
+                       RRE_indpres_3s[ , c("form_3ps_ind",# "formfreq_3ps_ind", 
                                            "fonform_3ps_ind", "fonroot_3ps_ind", "pal_end_3ps_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -1340,7 +1269,7 @@ RRE_verbs_morph0=merge(RRE_indpres_1s[, c("form_1ps_ind", "formfreq_1ps_ind",
                        all.x = F)
 
 RRE_verbs_morph1=merge(RRE_verbs_morph0, 
-                       RRE_indpres_1p[ , c("form_1pp_ind", "formfreq_1pp_ind", 
+                       RRE_indpres_1p[ , c("form_1pp_ind", #"formfreq_1pp_ind", 
                                            "fonform_1pp_ind", "fonroot_1pp_ind", "pal_end_1pp_ind",
                                            "lemma_morphit")], 
                        by.x="lemma_morphit", 
@@ -1349,7 +1278,7 @@ RRE_verbs_morph1=merge(RRE_verbs_morph0,
 
 # merge subjunctive forms
 RRE_verbs_morph=merge(RRE_verbs_morph1, 
-                      RRE_subjpres_1s[ , c("form_1ps_sub", "formfreq_1ps_sub", 
+                      RRE_subjpres_1s[ , c("form_1ps_sub", #"formfreq_1ps_sub", 
                                            "fonform_1ps_sub", "fonroot_1ps_sub", "pal_end_1ps_sub", 
                                            "lemma_morphit")], 
                       by.x="lemma_morphit", 
@@ -1392,14 +1321,12 @@ all_verbs_morph=rbind(ARE_verbs_morph, ERE_verbs_morph, IRE_verbs_morph, RRE_ver
 dim(RRE_verbs_morph)
 
 # output csvs
-write.csv(ARE_verbs_morph, "ARE_verbs_morpho_token.csv")
-write.csv(ERE_verbs_morph, "ERE_verbs_morpho_token.csv")
-write.csv(IRE_verbs_morph, "IRE_verbs_morpho_token.csv")
-write.csv(RRE_verbs_morph, "RRE_verbs_morpho_token.csv")
 
-write.csv(all_verbs_morph, "all_verbs_morpho_token.csv")
+setwd(outwd)
 
+#write.csv(ARE_verbs_morph, "ARE_verbs_morpho_types.csv")
+#write.csv(ERE_verbs_morph, "ERE_verbs_morpho_types.csv")
+#write.csv(IRE_verbs_morph, "IRE_verbs_morpho_types.csv")
+#write.csv(RRE_verbs_morph, "RRE_verbs_morpho_types.csv")
 
-
-
-
+write.csv(all_verbs_morph, "all_verbs_morpho_types.csv")
