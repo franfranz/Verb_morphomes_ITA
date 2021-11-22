@@ -1,8 +1,10 @@
-@misc{verb_morph_ita,
-  author = {Franzon, Francesca},
-  month = {12},
-  title = {{Morphomic Patterns in Italian Verbal Inflection}},
-  url = {https://github.com/franfranz/Verb_morphomes_ITA},
-  version = {4.0.1},
-  year = {2021}
-}
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Franzon"
+  given-names: "Francesca"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "Morphomic patterns in Italian verbal inflection"
+version: 4.0.1
+date-released: 2021-11-22
+url: "https://github.com/franfranz/Verb_morphomes_ITA"
