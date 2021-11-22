@@ -1,26 +1,26 @@
-###
+###  
+#   verb_morphomes_ITA_tokenfreq.R
 #
-#     M O R P H O M E    P A T T E R N S 
+#     M O R P H O M E    P A T T E R N S  (TOKENS)
 #
 #             +++ italian verbal morphology +++   
 #
-#      v.4.0.0 tokenfreq
+#      v.4.0.1  - - T O K E N   F R E Q U E N C Y - -
 #
 #     https://github.com/franfranz/Verb_morphomes_ITA
 #
 ### 
 
 
-#   Description
-#   
-#
-#
-#  Description
-#  Description
-#  The verb_lemma list of word frequencies is available here 
+#   This script counts the verbs with a L-morphomic pattern in Italian
+#   Verb types are collected from morph-it! (Zanchetta & Baroni, 2005)
+
+#   Token frequency is reported as collected from the ItWac corpus (Baroni et al.,2009)
+#   The list of word frequencies is available here: 
+#   https://github.com/franfranz/Word_Frequency_Lists_ITA/blob/main/itwac_verbs_lemmas_notail_2_1_0.csv
 
 
-# REFERENCE LEGEND - regular latin graphemes ere used instead of IPA to ensure compatibility
+# REFERENCE LEGEND - regular latin graphemes are used instead of IPA to ensure compatibility
 #
 # S = voiceless postalveolar fricative 
 # tS= voiceless alveloar affricate (with postalveolar solution)
@@ -35,7 +35,7 @@ rm(list=ls())
 # filename of the itwac list currently in use
 thefilename_itwac="itwac_verbs_lemmas_notail_2_1_0.csv"
 
-# required packages: stringr, pryr, xtable, viridis 
+# required packages: stringr, xtable
 
 
 ###
@@ -45,53 +45,8 @@ thefilename_itwac="itwac_verbs_lemmas_notail_2_1_0.csv"
 #
 ###
 
-# ### #
-#
-#   INPUT REQUIRED: GRAPHICAL SETTINGS 
-#
-
 library(pryr)
 library(stringr)
-
-## input required: graphical parameters 
-
-# palette in colors - viridis 
-# resists grayscale transformation and is good for printing but lighter colors ere not that visible in presentations
-col_a1 = viridisLite::viridis(8)[1]
-col_a2 = viridisLite::viridis(8)[2]
-
-col_b1 = viridisLite::viridis(8)[6]
-col_b2 = viridisLite::viridis(8)[7]
-
-col_c1 = viridisLite::viridis(8)[11]
-col_c2 = viridisLite::viridis(8)[12]
-
-col_d1 = viridisLite::viridis(8)[16]
-col_d2 = viridisLite::viridis(8)[17]
-
-
-# palette in greyscale 
-# col_a = "#171717" #grey10
-# col_b = "#303030" #grey20
-# col_c = "#7D7D7D"  #grey50
-# col_d = "#B3B3B3" #grey70
-
-pal_01=c(col_a1, col_b1, col_c1, col_d1)
-pal_02=c(col_a1, col_a2, col_b1, col_b2, col_c1, col_c2, col_d1, col_d2)
-
-
-# bar borders 
-bar_bor1="#FFFFFF" #white
-bar_bor2= "#4D4D4D" #grey30 
-
-# legend settings
-#legendcontent=
-#colcontent= 
-myfavbty= "n"
-
-# other constants
-roundnum = 4
-
 
 # ### #
 #
@@ -161,17 +116,17 @@ unique(morphit$POS)
 # extract forms
 #
 
-# present subjunctive 1- 2- 3 ps
-# present indicative 1 -2 ps
-# present infinite 
+# present indicative 1 - 3 ps, 1 pp
+# present subjunctive 1 ps
+# present infinitive 
 
-verbs0=  morphit[morphit$POS=="VER:sub+pres+1+s"|
-                   morphit$POS=="VER:ind+pres+1+p"|
-                   #         morphit$POS=="VER:sub+pres+3+s"|
-                   morphit$POS=="VER:ind+pres+1+s"|
+verbs0=  morphit[morphit$POS=="VER:ind+pres+1+s"|
                    morphit$POS=="VER:ind+pres+3+s"|
+                   morphit$POS=="VER:ind+pres+1+p"|
+                   morphit$POS=="VER:sub+pres+1+s"|
                    morphit$POS=="VER:inf+pres", 
 ]
+                  
 
 head(verbs0)
 
@@ -560,20 +515,6 @@ ARE_indpres_1p$formfreq_1pp_ind=ARE_indpres_1p$Freq
 
 ARE_subjpres_1s=are_verbs[are_verbs$POS=="VER:sub+pres+1+s", ]
 unique(ARE_subjpres_1s$fonsuff)
-
-# forms in [-io] 
-# #ARE_subjpres_1s_i=ARE_subjpres_1s[grep("i$", ARE_subjpres_1s$fonroot), ]
-# ARE_subjpres_1s_i=ARE_subjpres_1s[ARE_subjpres_1s$lemma_morphit %in% ARE_indpres_1s$pal_end_1ps_ind=ARE_indpres_1s$pal_end_jo$lemma_morphit==T, ]
-# ARE_subjpres_1s_i$fonroot=ARE_subjpres_1s_i$fonform
-# 
-# # subtract
-# ARE_subjpres_1s=ARE_subjpres_1s[ARE_subjpres_1s$lemma_morphit %in%ARE_subjpres_1s_i==F, ]
-# 
-# #remerge
-# ARE_subjpres_1s=rbind(ARE_subjpres_1s, ARE_subjpres_1s_i)
-# 
-# ARE_subjpres_1s_ii=ARE_subjpres_1s[grep("ii$", ARE_subjpres_1s$fonform), ]
-# unique(ARE_subjpres_1s_ii$fonsuff)
 
 ARE_subjpres_1s$fonroot=str_sub(ARE_subjpres_1s$fonform, 1, -2)
 ARE_subjpres_1s$fonsuff=str_sub(ARE_subjpres_1s$fonform, -1, -1)
@@ -1392,14 +1333,13 @@ all_verbs_morph=rbind(ARE_verbs_morph, ERE_verbs_morph, IRE_verbs_morph, RRE_ver
 dim(RRE_verbs_morph)
 
 # output csvs
-write.csv(ARE_verbs_morph, "ARE_verbs_morpho_token.csv")
-write.csv(ERE_verbs_morph, "ERE_verbs_morpho_token.csv")
-write.csv(IRE_verbs_morph, "IRE_verbs_morpho_token.csv")
-write.csv(RRE_verbs_morph, "RRE_verbs_morpho_token.csv")
+setwd(outwd)
+
+#write.csv(ARE_verbs_morph, "ARE_verbs_morpho_token.csv")
+#write.csv(ERE_verbs_morph, "ERE_verbs_morpho_token.csv")
+#write.csv(IRE_verbs_morph, "IRE_verbs_morpho_token.csv")
+#write.csv(RRE_verbs_morph, "RRE_verbs_morpho_token.csv")
 
 write.csv(all_verbs_morph, "all_verbs_morpho_token.csv")
-
-
-
 
 
