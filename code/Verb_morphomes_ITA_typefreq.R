@@ -1,7 +1,7 @@
 ###  
 #   verb_morphomes_ITA_typefreq.R
 #
-#     M O R P H O M E    P A T T E R N S  (TYPES)
+#    R E T R I E V A L   of   M O R P H O M E    P A T T E R N S  (TYPES)
 #
 #             +++ italian verbal morphology +++   
 #
